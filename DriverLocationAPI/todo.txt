@@ -1,0 +1,12 @@
+_DONE_:
+DriverController Driver structından oluşturulmuş ve methodlar buna attach edilmiş durumda.
+driverController diye ayrı bir struct oluşturulup methodları buna attach edilmeli.
+
+
+mongodb servisinde getAllDrivers için de test eklenecek.
+
+
+BUG: localhost:8080/drivers/batchq ya 2 tane driver gönderdiğim zaman bir tane 0,0 coordinatlı driver oluşuyor. Neden 404 not found demiyor ?
+
+
+Test, test, test
