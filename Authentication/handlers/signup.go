@@ -79,9 +79,8 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 func getSignedToken() (string, error) {
 	claimsMap := map[string]string{
-		"aud": "frontend.knowsearch.ml",
-		"iss": "knowsearch.ml",
-		"exp": fmt.Sprint(time.Now().Add(time.Minute * 1).Unix()),
+		"authenticated": "true",
+		"expiration":    fmt.Sprint(time.Now().Add(time.Minute * 15).Unix()),
 	}
 
 	secret := "Secure_Random_String"
