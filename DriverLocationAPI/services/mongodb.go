@@ -5,8 +5,12 @@ import (
 	"bitaksi/customErrors"
 	"bitaksi/models"
 	"context"
+	"encoding/csv"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -102,4 +106,47 @@ func (c *driverMongoController) GetAllDrivers() ([]models.Driver, *customErrors.
 	}
 
 	return drivers, nil
+}
+
+func (c *driverMongoController) InitializeMongoDB() {
+	c.clearAllData()
+	f, err := os.Open("static/Coordinates.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	data, err := csvReader.ReadAll()
+	if err != nil {
+		log.Println("error reading coordinates csv")
+		return
+	}
+
+	drivers := make([]models.Driver, len(data))
+	for i, d := range data[1:] {
+		lat, err := strconv.ParseFloat(d[0], 64)
+		if err != nil {
+			log.Println("error reading coordinate" + d[0])
+		}
+		long, err := strconv.ParseFloat(d[1], 64)
+		if err != nil {
+			log.Println("error reading coordinate" + d[1])
+		}
+		drivers[i] = models.Driver{
+			Location: *models.NewPoint([2]float64{lat, long}),
+		}
+	}
+
+	httpErr := c.InsertManyDrivers(drivers)
+	if httpErr != nil {
+		log.Println("Error initializing mongodb", err.Error())
+	}
+}
+
+func (c *driverMongoController) clearAllData() {
+	_, err := client.BitaksiInstance.Collection.DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		log.Println("Unable to delete data from mongodb")
+	}
 }
