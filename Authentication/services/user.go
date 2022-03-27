@@ -1,37 +1,46 @@
 package services
 
-import "auth/models"
+import (
+	"auth/client"
+	"auth/models"
+	"log"
 
-var userList = []models.User{
-	{"melih.ekici4@gmail.com", "mekici", "asdqwe", "melih ekici", "", 1},
-	{"melih.ekici5@gmail.com", "mekici5", "asdqwe5", "melih ekici5", "", 0},
-	{"melih.ekici6@gmail.com", "mekici6", "asdqwe6", "melih ekici6", "", 0},
-}
+	_ "github.com/lib/pq"
+)
 
 func GetUserObject(email string) (models.User, bool) {
-	// needs to be replaced using Database
-	for _, user := range userList {
-		if user.Email == email {
-			return user, true
-		}
+	db := client.PostgresConnection()
+	defer db.Close()
+
+	row := db.QueryRow("SELECT * FROM usertable WHERE email=$1", email)
+
+	var user models.User
+	var id int
+
+	err := row.Scan(&id, &user.Email, &user.Username, &user.Passwordhash)
+	if err != nil {
+		log.Println("Error executing sql", err.Error())
+		return models.User{}, false
 	}
-	return models.User{}, false
+
+	return user, true
 }
 
-func AddUserObject(email string, username string, passwordhash string, fullname string, role int) bool {
-	newUser := models.User{
-		Email:        email,
-		Passwordhash: passwordhash,
-		Username:     username,
-		Fullname:     fullname,
-		Role:         role,
+func AddUserObject(email string, username string, passwordhash string) bool {
+	db := client.PostgresConnection()
+	defer db.Close()
+
+	stmt, err := db.Prepare("INSERT INTO usertable (email, pass, username) VALUES($1, $2, $3)")
+	if err != nil {
+		log.Println("Error preparing statement", err)
+		return false
 	}
 
-	// check if user allready exists
-	for _, u := range userList {
-		if u.Equals(newUser) {
-			return false
-		}
+	_, err = stmt.Exec(email, username, passwordhash)
+	if err != nil {
+		log.Println("Error while inserting user to the database")
+		return false
 	}
+
 	return true
 }

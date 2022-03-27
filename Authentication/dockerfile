@@ -1,0 +1,9 @@
+FROM golang:latest
+WORKDIR /authentication
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o authentication
+
+EXPOSE 9090
+CMD [ "./authentication" ]

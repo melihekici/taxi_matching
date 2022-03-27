@@ -24,15 +24,11 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Passwordhash is missing"))
 		return
 	}
-	if _, ok := r.Header["Fullname"]; !ok {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Fullname is missing"))
-		return
-	}
 
+	fmt.Println(r.Header)
 	// validate and then add the user
 	check := services.AddUserObject(
-		r.Header["Email"][0], r.Header["Username"][0], r.Header["Passwordhash"][0], r.Header["Fullname"][0], 0)
+		r.Header["Email"][0], r.Header["Username"][0], r.Header["Passwordhash"][0])
 
 	if !check {
 		w.WriteHeader(http.StatusConflict)
