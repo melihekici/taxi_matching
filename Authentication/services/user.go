@@ -30,7 +30,7 @@ func AddUserObject(email string, username string, passwordhash string) bool {
 	db := client.PostgresConnection()
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO usertable (email, pass, username) VALUES($1, $2, $3)")
+	stmt, err := db.Prepare("INSERT INTO usertable (email, username, pass) VALUES($1, $2, $3)")
 	if err != nil {
 		log.Println("Error preparing statement", err)
 		return false
