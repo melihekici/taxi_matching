@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"auth/config"
 	"auth/services"
 	"errors"
 	"fmt"
@@ -83,9 +84,8 @@ func getSignedToken() (string, error) {
 		"expiration":    fmt.Sprint(time.Now().Add(time.Minute * 15).Unix()),
 	}
 
-	secret := "Secure_Random_String"
 	header := "HS256"
-	tokenString, err := services.GenerateToken(header, claimsMap, secret)
+	tokenString, err := services.GenerateToken(header, claimsMap, config.SECRET)
 	if err != nil {
 		return tokenString, err
 	}

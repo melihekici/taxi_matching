@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"auth/config"
 	"auth/services"
 	"net/http"
 )
@@ -16,7 +17,7 @@ func tokenValidationMiddleware(next http.Handler) http.Handler {
 			}
 
 			token := r.Header["Token"][0]
-			check, err := services.ValidateToken(token, "Secure_Random_String")
+			check, err := services.ValidateToken(token, config.SECRET)
 
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
