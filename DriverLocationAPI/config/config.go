@@ -7,6 +7,8 @@ var MONGO = map[string]string{
 	"TESTCOLLECTION": "test",
 }
 
+var SECRET = "^S+%R&YUI&G/H(J/H)("
+
 // func init() {
 // 	file, _ := os.Open("config/conf.json")
 // 	defer file.Close()
