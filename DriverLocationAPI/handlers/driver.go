@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bitaksi/controllers"
-	"fmt"
 	"net/http"
 )
 
@@ -12,8 +11,7 @@ var DriverHandler = &driverHandler{}
 
 func (h *driverHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	var batch bool = r.URL.Path[len("/drivers/"):] == "batch"
-	fmt.Println(batch)
+	var batch bool = r.URL.Path == "/drivers/batch"
 
 	switch {
 	case r.Method == http.MethodGet:
