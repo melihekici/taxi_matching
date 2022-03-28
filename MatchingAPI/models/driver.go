@@ -10,3 +10,14 @@ type Driver struct {
 type Drivers struct {
 	Drivers []Driver `json:"drivers"`
 }
+
+func (d *Driver) IsNil() bool {
+	return d.Equals(&Driver{})
+}
+
+func (d *Driver) Equals(o *Driver) bool {
+	if d.Id == o.Id && d.Location.Coordinates == o.Location.Coordinates {
+		return true
+	}
+	return false
+}
