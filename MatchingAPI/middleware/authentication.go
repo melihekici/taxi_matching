@@ -22,6 +22,7 @@ func TokenValidationMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
+			w.Header().Set("Token", r.Header["Token"][0])
 			next.ServeHTTP(w, r)
 		})
 }
