@@ -4,6 +4,7 @@ import (
 	"bitaksi/client"
 	"bitaksi/handlers"
 	"bitaksi/middleware"
+	"bitaksi/services"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 func main() {
 	// Connect to mongoDB client
 	client.ConnectDB()
+	services.DriverMongo.InitializeMongoDB()
 
 	mux := http.NewServeMux()
 
