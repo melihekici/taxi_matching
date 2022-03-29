@@ -6,10 +6,13 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func ValidateAuthentication(token string) (bool, *customErrors.HttpError) {
@@ -20,7 +23,7 @@ func ValidateAuthentication(token string) (bool, *customErrors.HttpError) {
 		}
 	}
 
-	valid, err := validateToken(token, config.SECRET)
+	valid, err := ValidateToken(token, config.SECRET)
 	if !valid {
 		return false, &customErrors.HttpError{
 			StatusCode:  http.StatusUnauthorized,
@@ -35,7 +38,7 @@ func ValidateAuthentication(token string) (bool, *customErrors.HttpError) {
 	return true, nil
 }
 
-func validateToken(token string, secret string) (bool, error) {
+func ValidateToken(token string, secret string) (bool, error) {
 	splitToken := strings.Split(token, ".")
 
 	if len(splitToken) != 3 {
@@ -50,6 +53,25 @@ func validateToken(token string, secret string) (bool, error) {
 
 	payload, err := base64.StdEncoding.DecodeString(splitToken[1])
 	if err != nil {
+		return false, errors.New("invalid token")
+	}
+
+	jwtPayload := make(map[string]string)
+	err = json.Unmarshal(payload, &jwtPayload)
+	if err != nil {
+		return false, errors.New("invalid token")
+	}
+
+	if expiration, ok := jwtPayload["expiration"]; ok {
+		expirationInt, err := strconv.Atoi(expiration)
+		if err != nil {
+			return false, errors.New("invalid token")
+		}
+
+		if int(time.Now().Unix()) > expirationInt {
+			return false, errors.New("token expired")
+		}
+	} else {
 		return false, errors.New("invalid token")
 	}
 

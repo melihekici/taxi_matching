@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -46,37 +47,37 @@ func ValidateToken(token string, secret string) (bool, error) {
 	splitToken := strings.Split(token, ".")
 
 	if len(splitToken) != 3 {
-		return false, nil
+		return false, errors.New("invalid token")
 	}
 
 	// decode the header and payload back to strings
 	header, err := base64.StdEncoding.DecodeString(splitToken[0])
 	if err != nil {
-		return false, err
+		return false, errors.New("invalid token")
 	}
 
 	payload, err := base64.StdEncoding.DecodeString(splitToken[1])
 	if err != nil {
-		return false, err
+		return false, errors.New("invalid token")
 	}
 
 	jwtPayload := make(map[string]string)
 	err = json.Unmarshal(payload, &jwtPayload)
 	if err != nil {
-		return false, err
+		return false, errors.New("invalid token")
 	}
 
 	if expiration, ok := jwtPayload["expiration"]; ok {
 		expirationInt, err := strconv.Atoi(expiration)
 		if err != nil {
-			return false, err
+			return false, errors.New("invalid token")
 		}
 
 		if int(time.Now().Unix()) > expirationInt {
-			return false, err
+			return false, errors.New("token expired")
 		}
 	} else {
-		return false, err
+		return false, errors.New("invalid token")
 	}
 
 	// again create the signature
@@ -88,7 +89,7 @@ func ValidateToken(token string, secret string) (bool, error) {
 	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
 	// check if signature is equal to passed signature
 	if signature != splitToken[2] {
-		return false, nil
+		return false, errors.New("invalid token")
 	}
 
 	return true, nil
