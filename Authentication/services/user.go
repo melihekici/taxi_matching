@@ -6,6 +6,7 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GetUserObject(email string) (models.User, bool) {
@@ -17,7 +18,7 @@ func GetUserObject(email string) (models.User, bool) {
 	var user models.User
 	var id int
 
-	err := row.Scan(&id, &user.Email, &user.Username, &user.Passwordhash)
+	err := row.Scan(&id, &user.Email, &user.Username, &user.Password)
 	if err != nil {
 		log.Println("Error executing sql", err.Error())
 		return models.User{}, false
@@ -43,4 +44,14 @@ func AddUserObject(email string, username string, passwordhash string) bool {
 	}
 
 	return true
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+func ValidatePasswordHash(hash string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
