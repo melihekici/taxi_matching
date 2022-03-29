@@ -1,14 +1,9 @@
 package models
 
 type User struct {
-	Email        string
-	Username     string
-	Passwordhash string
-}
-
-// validate password
-func (u *User) ValidatePasswordHash(pswdhash string) bool {
-	return u.Passwordhash == pswdhash
+	Email    string
+	Username string
+	Password string
 }
 
 // equality checking function
