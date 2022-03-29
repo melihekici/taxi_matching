@@ -3,13 +3,15 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"matching/algorithms"
 	"matching/models"
 	"net/http"
+	"os"
 )
 
 func GetAllDrivers(token string) ([]models.Driver, error) {
-	req, err := http.NewRequest("GET", "http://localhost:8080/drivers", nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://%s:8080/drivers", os.Getenv("DRIVER_API_HOST")), nil)
 	if err != nil {
 		return []models.Driver{}, err
 	}
