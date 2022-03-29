@@ -6,8 +6,15 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 )
+
+type jwtPayload struct {
+	Authentication bool      `json:"authentication"`
+	Expiration     time.Time `json:"expiration"`
+}
 
 func GenerateToken(header string, payload map[string]string, secret string) (string, error) {
 	// create a new hash of type sha256
@@ -50,6 +57,25 @@ func ValidateToken(token string, secret string) (bool, error) {
 
 	payload, err := base64.StdEncoding.DecodeString(splitToken[1])
 	if err != nil {
+		return false, err
+	}
+
+	jwtPayload := make(map[string]string)
+	err = json.Unmarshal(payload, &jwtPayload)
+	if err != nil {
+		return false, err
+	}
+
+	if expiration, ok := jwtPayload["expiration"]; ok {
+		expirationInt, err := strconv.Atoi(expiration)
+		if err != nil {
+			return false, err
+		}
+
+		if int(time.Now().Unix()) > expirationInt {
+			return false, err
+		}
+	} else {
 		return false, err
 	}
 
