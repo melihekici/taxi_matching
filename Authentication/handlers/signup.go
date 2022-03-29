@@ -20,16 +20,22 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Username is missing"))
 		return
 	}
-	if _, ok := r.Header["Passwordhash"]; !ok {
+	if _, ok := r.Header["Password"]; !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Passwordhash is missing"))
+		w.Write([]byte("Password is missing"))
 		return
 	}
 
-	fmt.Println(r.Header)
+	passwordHash, err := services.HashPassword(r.Header["Password"][0])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error hashing password"))
+		return
+	}
+
 	// validate and then add the user
 	check := services.AddUserObject(
-		r.Header["Email"][0], r.Header["Username"][0], r.Header["Passwordhash"][0])
+		r.Header["Email"][0], r.Header["Username"][0], passwordHash)
 
 	if !check {
 		w.WriteHeader(http.StatusConflict)
@@ -47,13 +53,13 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Email Missing"))
 		return
 	}
-	if _, ok := r.Header["Passwordhash"]; !ok {
+	if _, ok := r.Header["Password"]; !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Passwordhash Missing"))
+		w.Write([]byte("Password Missing"))
 		return
 	}
 
-	valid, err := validateUser(r.Header["Email"][0], r.Header["Passwordhash"][0])
+	valid, err := validateUser(r.Header["Email"][0], r.Header["Password"][0])
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("User does not exist"))
@@ -93,13 +99,13 @@ func getSignedToken() (string, error) {
 	return tokenString, nil
 }
 
-func validateUser(email string, passwordHash string) (bool, error) {
+func validateUser(email string, password string) (bool, error) {
 	usr, exists := services.GetUserObject(email)
 	if !exists {
 		return false, errors.New("user does not exist")
 	}
 
-	passwordCheck := usr.ValidatePasswordHash(passwordHash)
+	passwordCheck := services.ValidatePasswordHash(usr.Password, password)
 	if !passwordCheck {
 		return false, nil
 	}
