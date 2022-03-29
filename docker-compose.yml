@@ -10,32 +10,51 @@ services:
       - "5438:5432"
     volumes:
       - ./postgres:/postgres-data
+      - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
   authentication:
     build: ./Authentication
     container_name: authentication
+    environment:
+      - SECRET=^S+%R&YUI&G/H(J/H)(
+      - POSTGRES_HOST=postgres
     ports:
       - 9090:9090
     restart: unless-stopped
     depends_on:
       - postgres
-    networks:
-      - authnetwork
   mongodb:
     image: mongo
     container_name: mongodb
     volumes:
       - ./db:/db
     ports:
-      - "27017"
+      - "27017:27017"
     restart: unless-stopped
   driverlocation:
     build: ./DriverLocationAPI
     container_name: driverlocation
+    environment:
+      - SECRET=^S+%R&YUI&G/H(J/H)(
+      - MONGO_HOST=mongodb
+      - DATABASE=bitaksi
+      - COLLECTION=driver
+      - TESTCOLLECTION=test
     ports:
-      - "8080:8080"
+      - "8080"
     restart: unless-stopped
     depends_on:
       - mongodb
+  matching:
+    build: ./MatchingAPI
+    container_name: matchingAPI
+    environment:
+      - SECRET=^S+%R&YUI&G/H(J/H)(
+      - DRIVER_API_HOST=driverlocation
+    ports:
+      - "9191:9191"
+    restart: unless-stopped
+    depends_on:
+      - driverlocation
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
@@ -45,7 +64,3 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: password
-
-networks:
-  authnetwork:
-  
