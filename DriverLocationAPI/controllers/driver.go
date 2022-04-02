@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -25,6 +26,13 @@ func httpError(w http.ResponseWriter, statusCode int, errorMessage string) {
 }
 
 var DriverController = &driverController{}
+
+// swagger:route GET /drivers GetDrivers
+// Returns all drivers
+// responses:
+//  200:
+//  404:
+//  500:
 
 // Get All drivers
 func (d *driverController) GetDrivers(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +57,13 @@ func (d *driverController) GetDriver(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.URL)
 }
 
+// swagger:route POST /drivers CreateDriver
+// Creates and saves a driver to mongodb
+// responses:
+//  201:
+//  400:
+//  500:
+
 // Creates one driver
 func (d *driverController) CreateDriver(w http.ResponseWriter, r *http.Request) {
 	var driver models.Driver
@@ -56,7 +71,7 @@ func (d *driverController) CreateDriver(w http.ResponseWriter, r *http.Request) 
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	err := decoder.Decode(&driver)
-	if err != nil {
+	if err != nil || driver.IsNil() {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad Request"))
 		return
@@ -72,6 +87,13 @@ func (d *driverController) CreateDriver(w http.ResponseWriter, r *http.Request) 
 	fmt.Fprint(w, "Driver created succesfully")
 }
 
+// swagger:route POST /drivers/batch CreateDrivers
+// Creates and saves drivers in batch to mongodb
+// responses:
+//  201:
+//  400:
+//  500:
+
 // Create drivers in batch
 func (d *driverController) CreateDrivers(w http.ResponseWriter, r *http.Request) {
 	var drivers models.Drivers
@@ -79,7 +101,10 @@ func (d *driverController) CreateDrivers(w http.ResponseWriter, r *http.Request)
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	err := decoder.Decode(&drivers)
-	if err != nil {
+	log.Println("-------")
+	log.Println(drivers)
+	log.Println("-------")
+	if err != nil || drivers.IsNil() || drivers.HasNilDriver() {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad Request"))
 		return
@@ -94,6 +119,13 @@ func (d *driverController) CreateDrivers(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, "Drivers are created succesfully")
 }
+
+// swagger:route DELETE /drivers/{id} DeleteDriver
+// Creates and saves drivers in batch to mongodb
+// responses:
+//  201:
+//  400:
+//  500:
 
 // Delete one driver
 func (d *driverController) DeleteDriver(w http.ResponseWriter, r *http.Request) {
