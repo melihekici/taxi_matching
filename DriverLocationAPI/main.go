@@ -5,9 +5,10 @@ import (
 	"bitaksi/handlers"
 	"bitaksi/middleware"
 	"bitaksi/services"
-	"fmt"
 	"log"
 	"net/http"
+
+	openApiMiddleware "github.com/go-openapi/runtime/middleware"
 )
 
 func main() {
@@ -17,15 +18,17 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("asd")
-	})
 	mux.Handle("/drivers", middleware.TokenValidationMiddleware(handlers.DriverHandler))
 	mux.Handle("/drivers/", middleware.TokenValidationMiddleware(handlers.DriverHandler))
+
+	// documentation
+	opts1 := openApiMiddleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := openApiMiddleware.Redoc(opts1, nil)
+	mux.Handle("/docs", sh)
+	mux.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println(err)
 }
