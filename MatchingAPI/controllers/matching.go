@@ -13,9 +13,14 @@ type matchingController struct {
 
 var MatchingController = &matchingController{}
 
+// Request body for driver finding service
 type findDriversRequest struct {
+	// User location
+	// required: true
 	Location models.Location `json:"location"`
-	Radius   float64         `json:"radius"` // in meters
+	// Radius in meters
+	// required: true
+	Radius float64 `json:"radius"` // in meters
 }
 
 type findDriversResponse struct {
@@ -23,6 +28,15 @@ type findDriversResponse struct {
 	Distance float64       `json:"distance"`
 }
 
+// swagger:route POST /find FindDriver
+// Looks for a driver in given radius around given location
+// responses:
+//  200:
+//  400:
+//  409:
+//  500:
+
+// Creates a new user
 func (m *matchingController) FindDrivers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Looking for drivers")
 
