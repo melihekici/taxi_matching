@@ -12,16 +12,24 @@ type GeoLocation struct {
 	Properties map[string]string `json:"properties" bson:"properties"`
 }
 
+// Geolocation object
 type Location struct {
+	// Location type
 	Type        string      `json:"type" bson:"type"`
+	// Coordinates
 	Coordinates coordinates `json:"coordinates" bson:"coordinates"`
 }
 
-func NewPoint(coordinates [2]float64) *Location {
+func NewPoint(coordinates [2]float64) (*Location, error) {
+	c, err := NewCoordinates(coordinates)
+	if err != nil {
+		return &Location{}, err
+	}
+
 	return &Location{
 		Type:        "Point",
-		Coordinates: coordinates,
-	}
+		Coordinates: c,
+	}, nil
 }
 
 func NewCoordinates(coordinates [2]float64) (coordinates, error) {
