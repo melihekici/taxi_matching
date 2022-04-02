@@ -1,32 +1,62 @@
+// Package classification Authentication API
+//
+// Documentation for Authentication API
+//
+// Schemes: http
+// Host: localhost:9090
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// swagger:meta
 package handlers
 
 import (
 	"auth/config"
 	"auth/services"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"time"
 )
 
+// swagger:route POST /auth/signup Signup
+// Creates a new user
+// responses:
+//  201: noContent
+//  400: Bad Request
+//  409: Conflict
+
+// Creates a new user
 func SignupHandler(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Header["Email"]; !ok {
+	var request signupRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Bad Request"))
+		return
+	}
+
+	if request.Email == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Email is missing"))
 		return
-	}
-	if _, ok := r.Header["Username"]; !ok {
+	} else if request.Username == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Username is missing"))
 		return
-	}
-	if _, ok := r.Header["Password"]; !ok {
+	} else if request.Password == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Password is missing"))
 		return
 	}
 
-	passwordHash, err := services.HashPassword(r.Header["Password"][0])
+	passwordHash, err := services.HashPassword(request.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Error hashing password"))
@@ -35,7 +65,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// validate and then add the user
 	check := services.AddUserObject(
-		r.Header["Email"][0], r.Header["Username"][0], passwordHash)
+		request.Email, request.Username, passwordHash)
 
 	if !check {
 		w.WriteHeader(http.StatusConflict)
@@ -43,23 +73,39 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("User Created"))
 }
 
+// swagger:route POST /auth/signin Signin
+// Returns a jwt token token for authentication
+// responses:
+//  200: signinResponse
+//  400:
+//  401:
+//  500:
+
+// Signin the user and return a jwt token
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Header["Email"]; !ok {
+	var request signupRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Email Missing"))
-		return
-	}
-	if _, ok := r.Header["Password"]; !ok {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Password Missing"))
+		w.Write([]byte("Bad Request"))
 		return
 	}
 
-	valid, err := validateUser(r.Header["Email"][0], r.Header["Password"][0])
+	if request.Email == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Email is missing"))
+		return
+	} else if request.Password == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Password is missing"))
+		return
+	}
+
+	valid, err := validateUser(request.Email, request.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("User does not exist"))
