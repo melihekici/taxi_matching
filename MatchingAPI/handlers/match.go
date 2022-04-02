@@ -1,3 +1,18 @@
+// Package classification Matching API
+//
+// Documentation for Mathcing API
+//
+// Schemes: http
+// Host: localhost:9191
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// swagger:meta
 package handlers
 
 import (
