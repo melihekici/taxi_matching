@@ -12,8 +12,11 @@ type GeoLocation struct {
 	Properties map[string]string `json:"properties" bson:"properties"`
 }
 
+// Geolocation object
 type Location struct {
-	Type        string      `json:"type" bson:"type"`
+	// Location type
+	Type string `json:"type" bson:"type"`
+	// Coordinates
 	Coordinates coordinates `json:"coordinates" bson:"coordinates"`
 }
 
