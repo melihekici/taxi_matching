@@ -21,3 +21,37 @@ func (d *Driver) Equals(o *Driver) bool {
 	}
 	return false
 }
+
+func (d *Drivers) HasNilDriver() bool {
+	for _, driver := range d.Drivers {
+		if driver.IsNil() {
+			return true
+		}
+	}
+	return false
+}
+
+func (d *Drivers) IsNil() bool {
+	if len(d.Drivers) == 0 {
+		return true
+	}
+	for _, driver := range d.Drivers {
+		if !driver.IsNil() {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (d *Drivers) Equals(o *Drivers) bool {
+	if len(d.Drivers) != len(o.Drivers) {
+		return false
+	}
+	for i, currentDriver := range d.Drivers {
+		if !currentDriver.Equals(&o.Drivers[i]) {
+			return false
+		}
+	}
+	return true
+}
