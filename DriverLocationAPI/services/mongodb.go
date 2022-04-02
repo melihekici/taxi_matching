@@ -133,8 +133,12 @@ func (c *driverMongoController) InitializeMongoDB() {
 		if err != nil {
 			log.Println("error reading coordinate" + d[1])
 		}
+		newPoint, err := models.NewPoint([2]float64{lat, long})
+		if err != nil {
+			log.Println("invalid coordinates")
+		}
 		drivers[i] = models.Driver{
-			Location: *models.NewPoint([2]float64{lat, long}),
+			Location: *newPoint,
 		}
 	}
 
