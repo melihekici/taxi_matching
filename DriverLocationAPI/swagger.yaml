@@ -1,0 +1,129 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  CreateDriversRequest:
+    description: Create batch drivers request body
+    properties:
+      drivers:
+        description: List of drivers to be created
+        items:
+          $ref: '#/definitions/DriverRequest'
+        type: array
+        x-go-name: Drivers
+    required:
+    - drivers
+    type: object
+    x-go-name: CreateDriversInBatchRequest
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/DriverLocationAPI/controllers
+  DriverRequest:
+    description: Driver Request Model
+    properties:
+      location:
+        $ref: '#/definitions/LocationSwagger'
+    type: object
+    x-go-name: DriverRequestModelSwagger
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/DriverLocationAPI/controllers
+  DriverResponse:
+    description: Driver Response Model
+    properties:
+      id:
+        description: Driver ID
+        type: string
+        x-go-name: Id
+      location:
+        $ref: '#/definitions/LocationSwagger'
+    type: object
+    x-go-name: DriverResponseModelSwagger
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/DriverLocationAPI/controllers
+  LocationSwagger:
+    description: Geolocation object
+    properties:
+      coordinates:
+        description: Coordinates
+        items:
+          format: double
+          type: number
+        type: array
+        x-go-name: Coordinates
+      type:
+        description: Type
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/DriverLocationAPI/controllers
+host: localhost:8080
+info:
+  description: Documentation for Driver API
+  title: Driver API
+  version: 1.0.0
+paths:
+  /drivers:
+    get:
+      description: Returns all drivers
+      operationId: GetDrivers
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+    post:
+      description: Creates and saves a driver to mongodb
+      operationId: CreateDriver
+      parameters:
+      - description: CreateDriver Request Body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/DriverRequest'
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+  /drivers/{id}:
+    delete:
+      description: Creates and saves drivers in batch to mongodb
+      operationId: DeleteDriver
+      parameters:
+      - description: driver id
+        in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+  /drivers/batch:
+    post:
+      description: Creates and saves drivers in batch to mongodb
+      operationId: CreateDrivers
+      parameters:
+      - description: CreateDrivers Request Body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateDriversRequest'
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

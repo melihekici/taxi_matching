@@ -1,0 +1,74 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  Location:
+    description: Geolocation object
+    properties:
+      coordinates:
+        $ref: '#/definitions/coordinates'
+        description: Coordinates
+        items:
+          format: double
+          type: number
+        type: array
+        x-go-name: Coordinates
+      type:
+        description: Location type
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-name: LocationSwagger
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/MatchingAPI/models
+  coordinates:
+    items:
+      format: double
+      type: number
+    type: array
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/MatchingAPI/models
+  findDriverRequest:
+    description: Request body for driver finding service
+    properties:
+      Location:
+        $ref: '#/definitions/Location'
+      Radius:
+        description: Radius in meters
+        format: double
+        type: number
+    required:
+    - Location
+    - Radius
+    type: object
+    x-go-name: findDriverRequestSwagger
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/MatchingAPI/controllers
+host: localhost:9191
+info:
+  description: Documentation for Mathcing API
+  title: Matching API
+  version: 1.0.0
+paths:
+  /find:
+    post:
+      description: Looks for a driver in given radius around given location
+      operationId: FindDriver
+      parameters:
+      - description: FindDriver request body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/findDriverRequest'
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "409":
+          description: ""
+        "500":
+          description: ""
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

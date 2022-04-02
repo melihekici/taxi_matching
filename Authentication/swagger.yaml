@@ -1,0 +1,111 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  User:
+    properties:
+      Email:
+        description: |-
+          User email
+          in: string
+        type: string
+      Password:
+        description: |-
+          Password
+          in: string
+        type: string
+      Username:
+        description: |-
+          Username
+          in: string
+        type: string
+    type: object
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/Authentication/models
+  signinRequest:
+    description: Request body for signin service
+    properties:
+      email:
+        description: User email
+        type: string
+        x-go-name: Email
+      password:
+        description: User password
+        type: string
+        x-go-name: Password
+    required:
+    - email
+    - password
+    type: object
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/Authentication/handlers
+  signupRequest:
+    description: Request body for signup service
+    properties:
+      email:
+        description: User email
+        type: string
+        x-go-name: Email
+      password:
+        description: User password
+        type: string
+        x-go-name: Password
+      username:
+        description: Username
+        type: string
+        x-go-name: Username
+    required:
+    - email
+    - username
+    - password
+    type: object
+    x-go-package: _/home/canavar/Desktop/golang/bitaksi/Authentication/handlers
+host: localhost:9090
+info:
+  description: Documentation for Authentication API
+  title: Authentication API
+  version: 1.0.0
+paths:
+  /auth/signin:
+    post:
+      description: Returns a jwt token token for authentication
+      operationId: Signin
+      parameters:
+      - description: Signin Request Body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/signinRequest'
+      responses:
+        "200":
+          $ref: '#/responses/signinResponse'
+  /auth/signup:
+    post:
+      description: Creates a new user
+      operationId: Signup
+      parameters:
+      - description: Signup Request Body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/signupRequest'
+      responses:
+        "201":
+          $ref: '#/responses/noContent'
+        "400":
+          $ref: '#/responses/Bad'
+          description: Request
+        "409":
+          $ref: '#/responses/Conflict'
+produces:
+- application/json
+responses:
+  signinResponse:
+    description: A token returns in the response
+    headers:
+      token:
+        description: JWT Token (15 mins)
+        type: string
+schemes:
+- http
+swagger: "2.0"
