@@ -15,7 +15,7 @@ type GeoLocation struct {
 // Geolocation object
 type Location struct {
 	// Location type
-	Type        string      `json:"type" bson:"type"`
+	Type string `json:"type" bson:"type"`
 	// Coordinates
 	Coordinates coordinates `json:"coordinates" bson:"coordinates"`
 }
