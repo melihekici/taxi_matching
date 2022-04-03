@@ -25,6 +25,12 @@ import (
 	"time"
 )
 
+type signupHandler struct{}
+type signinHandler struct{}
+
+var SignupHandler = &signupHandler{}
+var SigninHandler = &signinHandler{}
+
 // swagger:route POST /auth/signup Signup
 // Creates a new user
 // responses:
@@ -33,7 +39,7 @@ import (
 //  409: Conflict
 
 // Creates a new user
-func SignupHandler(w http.ResponseWriter, r *http.Request) {
+func (s *signupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var request signupRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -86,7 +92,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 //  500:
 
 // Signin the user and return a jwt token
-func SigninHandler(w http.ResponseWriter, r *http.Request) {
+func (s *signinHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var request signupRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
