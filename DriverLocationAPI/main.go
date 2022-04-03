@@ -5,8 +5,10 @@ import (
 	"bitaksi/handlers"
 	"bitaksi/middleware"
 	"bitaksi/services"
+	"context"
 	"log"
 	"net/http"
+	"time"
 
 	openApiMiddleware "github.com/go-openapi/runtime/middleware"
 )
@@ -20,6 +22,16 @@ func main() {
 
 	mux.Handle("/drivers", middleware.TokenValidationMiddleware(handlers.DriverHandler))
 	mux.Handle("/drivers/", middleware.TokenValidationMiddleware(handlers.DriverHandler))
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Second*5))
+		defer cancel()
+		err := client.BitaksiInstance.DB.Client().Ping(ctx, nil)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
 
 	// documentation
 	opts1 := openApiMiddleware.RedocOpts{SpecURL: "/swagger.yaml"}
