@@ -14,14 +14,8 @@ func PostgresConnection() *sql.DB {
 
 	db, err := sql.Open("postgres", url)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln("Unable to open postgres database " + err.Error())
 	}
 
-	err = db.Ping()
-	if err != nil {
-		log.Panicln("Unable to connect to postgres database " + err.Error())
-	}
-
-	log.Println("Connected to Postgres Database")
 	return db
 }
