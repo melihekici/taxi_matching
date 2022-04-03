@@ -34,6 +34,6 @@ It allows the query to find the nearest driver around a given GeoJSON point.
 The API provides finding the nearest driver location with a given GeoJSON point and radius.  
 
 It only accepts authenticated user requests (requests with Token in header).  
-The endpoint that allows searching with a GeoJSON point to find a driver if it matches the given criteria.  
+The "/find" endpoint that allows searching with a GeoJSON point and radiues to find a driver if there is any inside radius around location.  
 
 Swagger Documentation: "localhost:9191/docs"
