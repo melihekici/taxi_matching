@@ -12,7 +12,7 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	mux.Handle("/find", middleware.TokenValidationMiddleware(handlers.MatchingHandler))
+	mux.Handle("/find", middleware.CircuitBreakerMiddleware(middleware.TokenValidationMiddleware(handlers.MatchingHandler)))
 
 	// documentation
 	opts1 := openApiMiddleware.RedocOpts{SpecURL: "/swagger.yaml"}
@@ -24,5 +24,4 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-
 }
