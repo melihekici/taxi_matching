@@ -2,6 +2,7 @@ package main
 
 import (
 	"auth/handlers"
+	"auth/middleware"
 	"net/http"
 
 	openApiMiddleware "github.com/go-openapi/runtime/middleware"
@@ -12,8 +13,8 @@ func main() {
 	mainRouter := mux.NewRouter()
 	authRoter := mainRouter.PathPrefix("/auth").Subrouter()
 
-	authRoter.HandleFunc("/signup", handlers.SignupHandler)
-	authRoter.HandleFunc("/signin", handlers.SigninHandler)
+	authRoter.Handle("/signup", middleware.CircuitBreakerMiddleware(handlers.SignupHandler))
+	authRoter.Handle("/signin", middleware.CircuitBreakerMiddleware(handlers.SigninHandler))
 
 	// documentation
 	opts1 := openApiMiddleware.RedocOpts{SpecURL: "/swagger.yaml"}
